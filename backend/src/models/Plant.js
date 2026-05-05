@@ -1,0 +1,41 @@
+import mongoose from "mongoose";
+
+const plantSchema = new mongoose.Schema({
+  plantName: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["available", "trading", "traded", "notAvailable"],
+    default: "notAvailable",
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
+});
+
+const Plant = mongoose.model("Plant", plantSchema);
+
+export default Plant;
