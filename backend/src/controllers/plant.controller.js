@@ -2,7 +2,7 @@ import Plant from "../models/Plant.js";
 import * as plantService from "../services/plant.services.js";
 
 //public routes
-export const getAllPlants = async (req, res) => {
+export const getAllPlants = async (req, res, next) => {
   try {
     const plants = await plantService.getAllPlants();
     res.status(200).json({ plants });
@@ -11,7 +11,7 @@ export const getAllPlants = async (req, res) => {
   }
 };
 //get plant by id
-export const getPlantById = async (req, res) => {
+export const getPlantById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const plant = await plantService.getPlantById(id);
@@ -26,7 +26,7 @@ export const getPlantById = async (req, res) => {
 
 // private routes
 // create plant
-export const createPlant = async (req, res) => {
+export const createPlant = async (req, res, next) => {
   console.log(req.userId);
   const { plantName, description, imageUrl, status, location } = req.body;
 
@@ -49,7 +49,7 @@ export const createPlant = async (req, res) => {
 };
 
 // get my plants
-export const getMyPlants = async (req, res) => {
+export const getMyPlants = async (req, res, next) => {
   console.log(req.userId);
   try {
     const plants = await plantService.getMyPlants(req.userId);
@@ -62,7 +62,7 @@ export const getMyPlants = async (req, res) => {
 };
 
 // update plant
-export const updatePlant = async (req, res) => {
+export const updatePlant = async (req, res, next) => {
   const { id } = req.params;
   const { plantName, description, imageUrl, status, location } = req.body;
 
@@ -78,7 +78,7 @@ export const updatePlant = async (req, res) => {
   }
 };
 // delete a plant
-export const deletePlant = async (req, res) => {
+export const deletePlant = async (req, res, next) => {
   const { id } = req.params;
   try {
     await plantService.deletePlant(id, req.userId);

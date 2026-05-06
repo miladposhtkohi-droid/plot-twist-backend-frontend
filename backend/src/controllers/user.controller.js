@@ -1,5 +1,5 @@
 
-import * as userServices from "../services/user.servcices.js";
+import * as userServices from "../services/user.services.js";
 
 export const getMe = async (req, res) => {
   const userId = req.userId;

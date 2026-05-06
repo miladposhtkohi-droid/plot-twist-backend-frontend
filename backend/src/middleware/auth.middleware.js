@@ -19,10 +19,12 @@ export const authMiddleware = (req, res, next) => {
 };
 
 
-export const adminMiddleware =async (req, res, next) => {
+export const adminMiddleware = async (req, res, next) => {
   const adminRole = await User.findById(req.userId);
-  console.log(adminRole)
-  if (adminRole.roll !== "admin") {
+  if (!adminRole) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  if (adminRole.role !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }
   next();

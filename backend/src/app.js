@@ -5,19 +5,12 @@ import cors from "cors";
 import routes from "./routes/index.js";
 import { errorHandler , notFound } from "./middleware/error.middleware.js";
 const app = express();
-let isConnected = false;
-
-// Database connection
-async function connectDB() {
-  if (isConnected) return;
-  await mongoose.connect(process.env.MONGODB_URI);
-  isConnected = true;
-}
+import { connectToDatabase } from "./config/database.js";
 
 // Middleware
 app.use(async (req, res, next) => {
   try {
-    await connectDB();
+    await connectToDatabase();
     next();
   } catch (err) {
     next(err);

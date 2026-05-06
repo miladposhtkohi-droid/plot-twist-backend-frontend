@@ -39,7 +39,7 @@ export const login = async ({ email, password }) =>{
     const data = {
         name: user.name,
         email: user.email,
-        roll: user.roll,
+        role: user.role,
     }
  return ({ token, data });   
 }

@@ -32,7 +32,7 @@ export const getMyRequests = async (req, res , next) => {
   }
 };
 // get owner's trades
-export const getMyTrades = async (req, res) => {
+export const getMyTrades = async (req, res, next) => {
   try {
     const userId = req.userId;
     const trades = await tradeService.getMyTrades(userId);
