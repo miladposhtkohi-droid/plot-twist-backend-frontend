@@ -4,7 +4,7 @@
  */
 
 // Backend bas-URL
-const API_BASE_URL = "https://plot-twist-backend-frontend.onrender.com/api"; // Ändra till din backend URL
+const API_BASE_URL = "http://localhost:3001/api"; // Lokal utveckling
 
 /**
  * Hämta backend URL
@@ -74,15 +74,32 @@ export async function get(endpoint, token = null) {
  * @returns {Promise} Svar från servern
  */
 export async function post(endpoint, data) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+  console.log(`🌐 API POST: ${API_BASE_URL}${endpoint}`);
 
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(`📡 Response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`❌ API Error ${response.status}:`, errorData);
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log(`✅ API Success:`, responseData);
+    return responseData;
+  } catch (error) {
+    console.error(`❌ API Error for ${endpoint}:`, error);
+    throw error;
+  }
 }
 
 /**
@@ -93,16 +110,33 @@ export async function post(endpoint, data) {
  * @returns {Promise} Svar från servern
  */
 export async function postWithAuth(endpoint, data, token) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+  console.log(`🌐 API POST (AUTH): ${API_BASE_URL}${endpoint}`);
 
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(`📡 Response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`❌ API Error ${response.status}:`, errorData);
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log(`✅ API Success:`, responseData);
+    return responseData;
+  } catch (error) {
+    console.error(`❌ API Error for ${endpoint}:`, error);
+    throw error;
+  }
 }
 
 /**
@@ -113,16 +147,33 @@ export async function postWithAuth(endpoint, data, token) {
  * @returns {Promise} Svar från servern
  */
 export async function putWithAuth(endpoint, data, token) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+  console.log(`🌐 API PUT (AUTH): ${API_BASE_URL}${endpoint}`);
 
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    console.log(`📡 Response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`❌ API Error ${response.status}:`, errorData);
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log(`✅ API Success:`, responseData);
+    return responseData;
+  } catch (error) {
+    console.error(`❌ API Error for ${endpoint}:`, error);
+    throw error;
+  }
 }
 
 /**
@@ -132,13 +183,30 @@ export async function putWithAuth(endpoint, data, token) {
  * @returns {Promise} Svar från servern
  */
 export async function deleteWithAuth(endpoint, token) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  console.log(`🌐 API DELETE (AUTH): ${API_BASE_URL}${endpoint}`);
 
-  return response.json();
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(`📡 Response status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error(`❌ API Error ${response.status}:`, errorData);
+      throw new Error(errorData.message || `HTTP ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log(`✅ API Success:`, responseData);
+    return responseData;
+  } catch (error) {
+    console.error(`❌ API Error for ${endpoint}:`, error);
+    throw error;
+  }
 }

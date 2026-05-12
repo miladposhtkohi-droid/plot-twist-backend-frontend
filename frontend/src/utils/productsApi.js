@@ -7,7 +7,7 @@ import { get, postWithAuth, putWithAuth, deleteWithAuth } from "./api.js";
 import { getToken } from "./auth.js";
 
 // Backend bas-URL - samma som i api.js
-const API_BASE_URL = "https://plot-twist-backend-frontend.onrender.com/api";
+const API_BASE_URL = "http://localhost:3001/api";
 
 /**
  * Hämta alla växter

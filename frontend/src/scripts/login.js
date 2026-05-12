@@ -53,12 +53,15 @@ async function handleLoginSubmit(event) {
     if (response.success) {
       // Lyckad inloggning
       alert("Du har loggat in framgångsrikt!");
-      
+
       // Omdirigera till startsidan
       window.location.href = "index.html";
     } else {
       // Misslyckad inloggning
-      alert(response.message || "Inloggningen misslyckades. Kontrollera dina uppgifter.");
+      alert(
+        response.message ||
+          "Inloggningen misslyckades. Kontrollera dina uppgifter.",
+      );
     }
   } catch (error) {
     console.error("Fel vid inloggning:", error);
@@ -85,8 +88,8 @@ function validateForm(email, password) {
   }
 
   // Validera lösenord
-  if (!password || password.length < 1) {
-    alert("Vänligen ange ditt lösenord");
+  if (!password || password.length < 6) {
+    alert("Lösenordet måste innehålla minst 6 tecken");
     return false;
   }
 
