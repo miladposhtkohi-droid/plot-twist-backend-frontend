@@ -30,7 +30,7 @@ export async function get(endpoint, token = null) {
   }
 
   console.log(`🌐 API GET: ${API_BASE_URL}${endpoint}`);
-  
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -41,24 +41,24 @@ export async function get(endpoint, token = null) {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: "GET",
       headers,
-      signal: controller.signal
+      signal: controller.signal,
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     console.log(`📡 Response status: ${response.status}`);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error(`❌ API Error ${response.status}:`, errorData);
       throw new Error(errorData.message || `HTTP ${response.status}`);
     }
-    
+
     const data = await response.json();
     console.log(`✅ API Success:`, data);
     return data;
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if (error.name === "AbortError") {
       console.error(`❌ API Timeout for ${endpoint}: Request took too long`);
       throw new Error(`Request timeout for ${endpoint}`);
     }
@@ -100,6 +100,44 @@ export async function postWithAuth(endpoint, data, token) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
+  });
+
+  return response.json();
+}
+
+/**
+ * Skicka PUT-förfrågan med token
+ * @param {string} endpoint - Slutpunkt
+ * @param {object} data - Data att skicka
+ * @param {string} token - Token
+ * @returns {Promise} Svar från servern
+ */
+export async function putWithAuth(endpoint, data, token) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  return response.json();
+}
+
+/**
+ * Skicka DELETE-förfrågan med token
+ * @param {string} endpoint - Slutpunkt
+ * @param {string} token - Token
+ * @returns {Promise} Svar från servern
+ */
+export async function deleteWithAuth(endpoint, token) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   return response.json();

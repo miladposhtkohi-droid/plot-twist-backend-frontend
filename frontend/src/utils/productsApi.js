@@ -3,11 +3,11 @@
  * Innehåller funktioner för att hämta och hantera växter
  */
 
-import { get } from "./api.js";
+import { get, postWithAuth, putWithAuth, deleteWithAuth } from "./api.js";
 import { getToken } from "./auth.js";
 
-// Backend bas-URL
-const API_BASE_URL = "https://plot-twist-neon.vercel.app/api";
+// Backend bas-URL - samma som i api.js
+const API_BASE_URL = "https://plot-twist-backend-frontend.onrender.com/api";
 
 /**
  * Hämta alla växter
@@ -16,17 +16,17 @@ const API_BASE_URL = "https://plot-twist-neon.vercel.app/api";
 export async function getAllPlants() {
   try {
     const response = await get("/plants");
-    
+
     // Kontrollera om svaret innehåller en 'plants'-array
     if (response && response.plants && Array.isArray(response.plants)) {
       return response.plants;
     }
-    
+
     // Om svaret direkt är en array
     if (Array.isArray(response)) {
       return response;
     }
-    
+
     // Om inget av ovanstående, returnera tom array
     console.warn("⚠️ Oväntat svar från API:", response);
     return [];
@@ -59,20 +59,24 @@ export async function getPlantById(plantId) {
 export async function searchPlants(searchTerm) {
   try {
     const plants = await getAllPlants();
-    
+
     if (!Array.isArray(plants)) {
       return [];
     }
 
     // Filtrera växter baserat på sökterm
-    const filteredPlants = plants.filter(plant => {
+    const filteredPlants = plants.filter((plant) => {
       // Hantera både plantName och name
       const plantName = plant.plantName || plant.name || "";
       const description = plant.description || "";
-      
-      const nameMatch = plantName.toLowerCase().includes(searchTerm.toLowerCase());
-      const descriptionMatch = description.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
+      const nameMatch = plantName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const descriptionMatch = description
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
       return nameMatch || descriptionMatch;
     });
 
@@ -95,17 +99,17 @@ export async function getUserPlants() {
     }
 
     const response = await get("/plants/my-plants", token);
-    
+
     // Kontrollera om svaret innehåller en 'plants'-array
     if (response && response.plants && Array.isArray(response.plants)) {
       return response.plants;
     }
-    
+
     // Om svaret direkt är en array
     if (Array.isArray(response)) {
       return response;
     }
-    
+
     return [];
   } catch (error) {
     console.error("Fel vid hämtning av användarens växter:", error);
@@ -125,16 +129,8 @@ export async function createPlant(plantData) {
       throw new Error("Du måste vara inloggad för att skapa en växt");
     }
 
-    const response = await fetch(`${API_BASE_URL}/plants`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(plantData),
-    });
-
-    return response.json();
+    const response = await postWithAuth("/plants", plantData, token);
+    return response;
   } catch (error) {
     console.error("Fel vid skapande av växt:", error);
     throw error;
@@ -154,17 +150,8 @@ export async function updatePlant(plantId, plantData) {
       throw new Error("Du måste vara inloggad för att uppdatera en växt");
     }
 
-    // Använd PUT för uppdatering
-    const response = await fetch(`${API_BASE_URL}/plants/${plantId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(plantData),
-    });
-
-    return response.json();
+    const response = await putWithAuth(`/plants/${plantId}`, plantData, token);
+    return response;
   } catch (error) {
     console.error("Fel vid uppdatering av växt:", error);
     throw error;
@@ -183,16 +170,8 @@ export async function deletePlant(plantId) {
       throw new Error("Du måste vara inloggad för att ta bort en växt");
     }
 
-    // Använd DELETE för borttagning
-    const response = await fetch(`${API_BASE_URL}/plants/${plantId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.json();
+    const response = await deleteWithAuth(`/plants/${plantId}`, token);
+    return response;
   } catch (error) {
     console.error("Fel vid borttagning av växt:", error);
     throw error;
@@ -241,7 +220,9 @@ export async function createTrade(ownerPlantId, requesterPlantId) {
   try {
     const token = getToken();
     if (!token) {
-      throw new Error("Du måste vara inloggad för att skicka en bytesförfrågan");
+      throw new Error(
+        "Du måste vara inloggad för att skicka en bytesförfrågan",
+      );
     }
 
     const response = await fetch(`${API_BASE_URL}/trades`, {
@@ -252,7 +233,7 @@ export async function createTrade(ownerPlantId, requesterPlantId) {
       },
       body: JSON.stringify({
         ownerPlantId,
-        requesterPlantId
+        requesterPlantId,
       }),
     });
 
@@ -277,7 +258,7 @@ export async function getMyTrades() {
   try {
     const token = getToken();
     console.log("🔑 getMyTrades: Token exists:", !!token);
-    
+
     if (!token) {
       console.log("⚠️ getMyTrades: No token, returning empty arrays");
       return { requests: [], trades: [] };
@@ -288,11 +269,14 @@ export async function getMyTrades() {
     let requestsData = { trades: [] };
     try {
       requestsData = await get("/trades/my-requests", token);
-      console.log("✅ getMyTrades: Requests fetched successfully:", requestsData);
+      console.log(
+        "✅ getMyTrades: Requests fetched successfully:",
+        requestsData,
+      );
     } catch (error) {
       console.warn("⚠️ getMyTrades: Could not fetch requests:", error.message);
     }
-    
+
     const requests = requestsData.trades || [];
     console.log("📤 getMyTrades: Requests (I asked for):", requests);
 
@@ -305,16 +289,16 @@ export async function getMyTrades() {
     } catch (error) {
       console.warn("⚠️ getMyTrades: Could not fetch trades:", error.message);
     }
-    
+
     const trades = tradesData.trades || [];
     console.log("📥 getMyTrades: Trades (Others asked for):", trades);
 
     const result = {
       requests: requests,
-      trades: trades
+      trades: trades,
     };
     console.log("🎯 getMyTrades: Final result:", result);
-    
+
     return result;
   } catch (error) {
     console.error("❌ getMyTrades: Error:", error);
@@ -336,13 +320,16 @@ export async function acceptTrade(tradeId) {
       throw new Error("Du måste vara inloggad");
     }
 
-    const response = await fetch(`${API_BASE_URL}/trades/my-trades/${tradeId}/accept`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/trades/my-trades/${tradeId}/accept`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -368,13 +355,16 @@ export async function rejectTrade(tradeId) {
       throw new Error("Du måste vara inloggad");
     }
 
-    const response = await fetch(`${API_BASE_URL}/trades/my-trades/${tradeId}/reject`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/trades/my-trades/${tradeId}/reject`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -400,13 +390,16 @@ export async function cancelTrade(tradeId) {
       throw new Error("Du måste vara inloggad");
     }
 
-    const response = await fetch(`${API_BASE_URL}/trades/my-trades/${tradeId}/cancel`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/trades/my-trades/${tradeId}/cancel`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -432,13 +425,16 @@ export async function completeTrade(tradeId) {
       throw new Error("Du måste vara inloggad");
     }
 
-    const response = await fetch(`${API_BASE_URL}/trades/my-trades/${tradeId}/complete`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${API_BASE_URL}/trades/my-trades/${tradeId}/complete`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
