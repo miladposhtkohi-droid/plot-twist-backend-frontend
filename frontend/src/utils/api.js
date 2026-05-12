@@ -4,7 +4,7 @@
  */
 
 // Backend bas-URL
-const API_BASE_URL = "https://plot-twist-neon.vercel.app/api";
+const API_BASE_URL = "https://plot-twist-backend-frontend.onrender.com/api"; // Ändra till din backend URL
 
 /**
  * Hämta backend URL
